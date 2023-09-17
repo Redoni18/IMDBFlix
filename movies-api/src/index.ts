@@ -1,6 +1,17 @@
 import { Elysia, t } from "elysia";
+import { swagger } from '@elysiajs/swagger'
 
 const app = new Elysia()
+  .use(swagger({
+    path: '/v1/swagger',
+    documentation: {
+      info: {
+          title: 'IMDBFlix API Documentation',
+          version: '1.0.0'
+      }
+    },
+    
+  }))
   .group('/search', {
     query: t.Object({
       q: t.String()
