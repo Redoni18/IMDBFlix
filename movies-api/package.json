@@ -7,7 +7,9 @@
   },
   "dependencies": {
     "@elysiajs/swagger": "^0.6.2",
-    "elysia": "latest"
+    "@prisma/client": "^5.3.1",
+    "elysia": "latest",
+    "prisma": "^5.3.1"
   },
   "devDependencies": {
     "bun-types": "latest"
