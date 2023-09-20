@@ -20,8 +20,7 @@ model Movie {
   poster String
   cast Person[]
   reviews Review[]
-  episodes Episode[]
-  type String
+  // episodes Episode[]
 }
 
 model Person {
@@ -52,15 +51,15 @@ model Review {
   movieId Int
 }
 
-model Episode {
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title String
-  year Int
-  movie Movie @relation(fields: [movieId], references: [id])
-  movieId Int
-}
+// model Episode {
+//   id Int @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   title String
+//   year Int
+//   movie Movie @relation(fields: [movieId], references: [id])
+//   movieId Int
+// }
 
 enum Role {
   USER

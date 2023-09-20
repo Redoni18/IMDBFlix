@@ -1,5 +1,10 @@
+import { PrismaClient } from '@prisma/client';
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
+import { createMovie } from "./controllers/movies";
+
+const prisma = new PrismaClient();
+
 
 const app = new Elysia()
   .use(swagger({
@@ -38,8 +43,20 @@ const app = new Elysia()
       .get('/cast', ({params}) => `id: ${params.id}`)
       .get('/reviews', ({params}) => `id: ${params.id}`)
   })
+  .post('/movies', async ({ body }: { body: any }) => {
+    const result = await createMovie({ body });
+  
+    return {
+      status: result.status,
+      body: result.body,
+    };
+  })
   .listen(3000);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );
+
+process.on('beforeExit', () => {
+  prisma.$disconnect();
+});
