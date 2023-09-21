@@ -16,10 +16,10 @@ model Movie {
   updatedAt DateTime @updatedAt
   title String
   year Int
-  genre Genre[]
+  // genre Genre[]
   poster String
-  cast Person[]
-  reviews Review[]
+  // cast Person[]
+  // reviews Review[]
   // episodes Episode[]
 }
 
@@ -31,7 +31,7 @@ model Person {
   age Int
   type String
   bio String @db.Text
-  movies Movie[]
+  // movies Movie[]
 }
 
 model Genre {
@@ -39,7 +39,7 @@ model Genre {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title String
-  movie Movie[]
+  // movie Movie[]
 }
 
 model Review {
@@ -47,7 +47,7 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   comment String @db.Text
-  movie Movie @relation(fields: [movieId], references: [id])
+  // movie Movie @relation(fields: [movieId], references: [id])
   movieId Int
 }
 

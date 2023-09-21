@@ -1,9 +1,17 @@
-export type Movie = {
-    title: string,
-    year: number,
-    genre: number[], // Assuming genreIds is an array of genre IDs
-    poster: string,
-    cast: number[],
-    reviews: number[],
-    // episodes: number[]
+export interface Movie {
+    title: string;
+    year: number;
+    // genreIds: number[];
+    poster: string;
+    // castIds: number[];
+    // reviewIds: number[];
+}
+
+export interface CreateMovieRequest {
+    body: Movie;
+}
+
+export interface CreateMovieResponse {
+    status: number;
+    body: Movie | { error: string };
 }

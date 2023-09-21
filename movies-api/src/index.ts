@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
 import { createMovie } from "./controllers/movies";
+import { CreateMovieRequest, CreateMovieResponse } from "./type/Movie"
 
 const prisma = new PrismaClient();
 
@@ -43,14 +44,26 @@ const app = new Elysia()
       .get('/cast', ({params}) => `id: ${params.id}`)
       .get('/reviews', ({params}) => `id: ${params.id}`)
   })
-  .post('/movies', async ({ body }: { body: any }) => {
-    const result = await createMovie({ body });
-  
-    return {
-      status: result.status,
-      body: result.body,
-    };
-  })
+  .post(
+    '/movies/create',
+    async ({ body }) => {
+      const result = await createMovie({ body });
+
+      return {
+        status: result.status,
+        body: result.body,
+      };
+    }, {
+      body: t.Object({
+        title: t.String(),
+        year: t.Number(),
+        // genreIds: t.Array(t.Number()),
+        poster: t.String(),
+        // castIds: t.Array(t.Number()),
+        // reviewIds: t.Array(t.Number()),
+      }),
+    }
+  )
   .listen(3000);
 
 console.log(
