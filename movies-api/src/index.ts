@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
-import { createMovie } from "./controllers/movies";
+import { createMovie, updateMovie } from "./controllers/movies";
 import { CreateMovieRequest, CreateMovieResponse } from "./type/Movie"
 
 const prisma = new PrismaClient();
@@ -48,7 +48,29 @@ const app = new Elysia()
     '/movies/create',
     async ({ body }) => {
       const result = await createMovie({ body });
-
+      return {
+        status: result.status,
+        body: result.body
+      }
+    }, {
+      body: t.Object({
+        title: t.String(),
+        year: t.Number(),
+        // genreIds: t.Array(t.Number()),
+        poster: t.String(),
+        // castIds: t.Array(t.Number()),
+        // reviewIds: t.Array(t.Number()),
+      }),
+    }
+  )
+  .put('/movie/:id/update',
+    async ({ body, params }) => {
+      const { id } = params;
+      const updateRequest = {
+        body,
+        params: { id: parseInt(id) }
+      };
+      const result = await updateMovie(updateRequest);
       return {
         status: result.status,
         body: result.body,

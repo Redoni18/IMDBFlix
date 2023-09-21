@@ -1,10 +1,10 @@
-// src/controllers/movieController.ts
-
 import { PrismaClient } from '@prisma/client';
-import { CreateMovieRequest, CreateMovieResponse } from '../type/Movie';
+import { CreateMovieRequest, CreateMovieResponse, Movie, UpdateMovieRequest, UpdateMovieResponse } from '../type/Movie';
 
 const prisma = new PrismaClient();
 
+
+//Create new movie
 export async function createMovie(
   request: CreateMovieRequest
 ): Promise<CreateMovieResponse> {
@@ -56,3 +56,36 @@ export async function createMovie(
     };
   }
 }
+
+
+//update specific movie
+export async function updateMovie(
+    request: UpdateMovieRequest
+  ): Promise<UpdateMovieResponse> {
+    try {
+      const { body } = request;
+      const { id }: { id: number} = request.params
+
+      const movieDataToUpdate = body
+
+      const updatedMovie: Movie = await prisma.movie.update({
+        where: {
+            id: Number(id)
+        },
+        data: movieDataToUpdate
+      })
+  
+      // Create a new movie in the database
+      return {
+        status: 200, // OK
+        body: updatedMovie,
+      };
+    } catch (error) {
+      console.error('Error creating movie:', error);
+      return {
+        status: 500, // Internal Server Error
+        body: { error: 'Internal Server Error' },
+      };
+    }
+  }
+  

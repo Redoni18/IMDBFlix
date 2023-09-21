@@ -15,3 +15,13 @@ export interface CreateMovieResponse {
     status: number;
     body: Movie | { error: string };
 }
+
+export interface UpdateMovieRequest {
+    body: Movie;
+    params: { id: number };
+}
+  
+export interface UpdateMovieResponse {
+    status: number;
+    body: Movie | { error: string };
+}
