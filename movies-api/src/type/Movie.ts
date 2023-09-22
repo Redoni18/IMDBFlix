@@ -25,3 +25,12 @@ export interface UpdateMovieResponse {
     status: number;
     body: Movie | { error: string };
 }
+
+export interface DeleteMovieRequest {
+    params: { id: number };
+}
+  
+export interface DeleteMovieResponse {
+    status: number;
+    body: {successMessage: string} | { error: string };
+}

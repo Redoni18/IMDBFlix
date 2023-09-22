@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { CreateMovieRequest, CreateMovieResponse, Movie, UpdateMovieRequest, UpdateMovieResponse } from '../type/Movie';
+import { CreateMovieRequest, CreateMovieResponse, DeleteMovieRequest, DeleteMovieResponse, Movie, UpdateMovieRequest, UpdateMovieResponse } from '../type/Movie';
 
 const prisma = new PrismaClient();
 
@@ -61,31 +61,63 @@ export async function createMovie(
 //update specific movie
 export async function updateMovie(
     request: UpdateMovieRequest
-  ): Promise<UpdateMovieResponse> {
-    try {
-      const { body } = request;
-      const { id }: { id: number} = request.params
+): Promise<UpdateMovieResponse> {
+  try {
+    const { body } = request;
+    const { id }: { id: number} = request.params
 
-      const movieDataToUpdate = body
+    const movieDataToUpdate = body
 
-      const updatedMovie: Movie = await prisma.movie.update({
-        where: {
-            id: Number(id)
-        },
-        data: movieDataToUpdate
-      })
-  
-      // Create a new movie in the database
+    const updatedMovie: Movie = await prisma.movie.update({
+      where: {
+          id: Number(id)
+      },
+      data: movieDataToUpdate
+    })
+
+    // Create a new movie in the database
+    return {
+      status: 200, // OK
+      body: updatedMovie,
+    };
+  } catch (error) {
+    console.error('Error creating movie:', error);
+    return {
+      status: 500, // Internal Server Error
+      body: { error: 'Internal Server Error' },
+    };
+  }
+}
+
+
+export async function deleteMovie(
+  request: DeleteMovieRequest
+): Promise<DeleteMovieResponse> {
+  try {
+    const { id }: { id: number } = request.params;
+
+    const deletedMovie = await prisma.movie.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!deletedMovie) {
       return {
-        status: 200, // OK
-        body: updatedMovie,
-      };
-    } catch (error) {
-      console.error('Error creating movie:', error);
-      return {
-        status: 500, // Internal Server Error
-        body: { error: 'Internal Server Error' },
+        status: 404,
+        body: { error: 'Movie not found' },
       };
     }
+
+    return {
+      status: 204,
+      body: {successMessage: "Movie deleted successfully"},
+    };
+  } catch (error) {
+    console.error('Error deleting movie:', error);
+    return {
+      status: 500,
+      body: { error: 'Internal Server Error' },
+    };
   }
-  
+}

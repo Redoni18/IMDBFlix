@@ -1,8 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
-import { createMovie, updateMovie } from "./controllers/movies";
-import { CreateMovieRequest, CreateMovieResponse } from "./type/Movie"
+import { createMovie, deleteMovie, updateMovie } from "./controllers/movies";
 
 const prisma = new PrismaClient();
 
@@ -84,6 +83,20 @@ const app = new Elysia()
         // castIds: t.Array(t.Number()),
         // reviewIds: t.Array(t.Number()),
       }),
+    }
+  )
+  .delete('/movie/:id/delete',
+    async ({ params }) => {
+      const { id } = params
+      const deleteMovieRequest = {
+        params: { id: parseInt(id) }
+      }
+
+      const result = await deleteMovie(deleteMovieRequest)
+      return {
+        status: result.status,
+        body: result.body
+      }
     }
   )
   .listen(3000);
