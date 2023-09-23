@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
-import { createMovie, deleteMovie, updateMovie } from "./controllers/movies";
+import { createMovie, deleteMovie, fetchAllMovies, updateMovie } from "./controllers/movies";
 
 const prisma = new PrismaClient();
 
@@ -62,7 +62,7 @@ const app = new Elysia()
       }),
     }
   )
-  .put('/movie/:id/update',
+  .put('/movies/:id/update',
     async ({ body, params }) => {
       const { id } = params;
       const updateRequest = {
@@ -85,7 +85,7 @@ const app = new Elysia()
       }),
     }
   )
-  .delete('/movie/:id/delete',
+  .delete('/movies/:id/delete',
     async ({ params }) => {
       const { id } = params
       const deleteMovieRequest = {
@@ -93,6 +93,16 @@ const app = new Elysia()
       }
 
       const result = await deleteMovie(deleteMovieRequest)
+      return {
+        status: result.status,
+        body: result.body
+      }
+    }
+  )
+  .get('/movies', 
+    async () => {
+      const result = await fetchAllMovies()
+
       return {
         status: result.status,
         body: result.body

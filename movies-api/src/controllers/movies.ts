@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { CreateMovieRequest, CreateMovieResponse, DeleteMovieRequest, DeleteMovieResponse, Movie, UpdateMovieRequest, UpdateMovieResponse } from '../type/Movie';
+import { FetchAllMoviesResponse, CreateMovieRequest, CreateMovieResponse, DeleteMovieRequest, DeleteMovieResponse, Movie, UpdateMovieRequest, UpdateMovieResponse } from '../type/Movie';
 
 const prisma = new PrismaClient();
 
@@ -117,6 +117,23 @@ export async function deleteMovie(
     console.error('Error deleting movie:', error);
     return {
       status: 500,
+      body: { error: 'Internal Server Error' },
+    };
+  }
+}
+
+export async function fetchAllMovies(): Promise<FetchAllMoviesResponse> {
+  try {
+    const allMovies = await prisma.movie.findMany();
+
+    return {
+      status: 200, // OK
+      body: allMovies,
+    };
+  } catch (error) {
+    console.error('Error fetching all movies:', error);
+    return {
+      status: 500, // Internal Server Error
       body: { error: 'Internal Server Error' },
     };
   }

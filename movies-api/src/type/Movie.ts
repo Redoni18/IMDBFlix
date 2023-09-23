@@ -34,3 +34,10 @@ export interface DeleteMovieResponse {
     status: number;
     body: {successMessage: string} | { error: string };
 }
+
+export interface FetchAllMoviesRequest {} // mainly here when I need to implement pagination
+
+export interface FetchAllMoviesResponse {
+  status: number;
+  body: Movie[] | { error: string };
+}
