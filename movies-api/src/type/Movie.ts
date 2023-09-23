@@ -41,3 +41,12 @@ export interface FetchAllMoviesResponse {
   status: number;
   body: Movie[] | { error: string };
 }
+
+export interface GetUniqueMovieRequest {
+    params: { id: number };
+}
+
+export interface GetUniqueMovieResponse {
+    status: number;
+    body: Movie | { error: string };
+}

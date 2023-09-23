@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { FetchAllMoviesResponse, CreateMovieRequest, CreateMovieResponse, DeleteMovieRequest, DeleteMovieResponse, Movie, UpdateMovieRequest, UpdateMovieResponse } from '../type/Movie';
+import { FetchAllMoviesResponse, CreateMovieRequest, CreateMovieResponse, DeleteMovieRequest, DeleteMovieResponse, Movie, UpdateMovieRequest, UpdateMovieResponse, GetUniqueMovieRequest, GetUniqueMovieResponse } from '../type/Movie';
 
 const prisma = new PrismaClient();
 
@@ -136,5 +136,36 @@ export async function fetchAllMovies(): Promise<FetchAllMoviesResponse> {
       status: 500, // Internal Server Error
       body: { error: 'Internal Server Error' },
     };
+  }
+}
+
+export async function getUniqueMovie(
+  request: GetUniqueMovieRequest
+): Promise<GetUniqueMovieResponse> {
+  try {
+    const { id }: {id: number} = request.params 
+
+    const movie = await prisma.movie.findUnique({
+      where: {
+        id: Number(id)
+      }
+    })
+
+    if (!movie) {
+      return {
+        status: 404,
+        body: { error: 'Movie not found' },
+      };
+    }
+
+    return {
+      status: 200,
+      body: movie,
+    }
+  } catch (err) {
+    return {
+      status: 500,
+      body: { error: 'Internal Server Error' },
+    }
   }
 }

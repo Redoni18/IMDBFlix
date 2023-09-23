@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
-import { createMovie, deleteMovie, fetchAllMovies, updateMovie } from "./controllers/movies";
+import { createMovie, deleteMovie, fetchAllMovies, getUniqueMovie, updateMovie } from "./controllers/movies";
 
 const prisma = new PrismaClient();
 
@@ -43,72 +43,90 @@ const app = new Elysia()
       .get('/cast', ({params}) => `id: ${params.id}`)
       .get('/reviews', ({params}) => `id: ${params.id}`)
   })
-  .post(
-    '/movies/create',
-    async ({ body }) => {
-      const result = await createMovie({ body });
-      return {
-        status: result.status,
-        body: result.body
+  .group('/movies', (app) => {
+    return app
+    .post('/create', 
+      async ({ body }) => {
+        const result = await createMovie({ body });
+        return {
+          status: result.status,
+          body: result.body
+        }
+      },
+      {
+        body: t.Object({
+          title: t.String(),
+          year: t.Number(),
+          // genreIds: t.Array(t.Number()),
+          poster: t.String(),
+          // castIds: t.Array(t.Number()),
+          // reviewIds: t.Array(t.Number()),
+        }),
       }
-    }, {
-      body: t.Object({
-        title: t.String(),
-        year: t.Number(),
-        // genreIds: t.Array(t.Number()),
-        poster: t.String(),
-        // castIds: t.Array(t.Number()),
-        // reviewIds: t.Array(t.Number()),
-      }),
-    }
-  )
-  .put('/movies/:id/update',
-    async ({ body, params }) => {
-      const { id } = params;
-      const updateRequest = {
-        body,
-        params: { id: parseInt(id) }
-      };
-      const result = await updateMovie(updateRequest);
-      return {
-        status: result.status,
-        body: result.body,
-      };
-    }, {
-      body: t.Object({
-        title: t.String(),
-        year: t.Number(),
-        // genreIds: t.Array(t.Number()),
-        poster: t.String(),
-        // castIds: t.Array(t.Number()),
-        // reviewIds: t.Array(t.Number()),
-      }),
-    }
-  )
-  .delete('/movies/:id/delete',
-    async ({ params }) => {
-      const { id } = params
-      const deleteMovieRequest = {
-        params: { id: parseInt(id) }
+    )
+    .put('/:id/update', 
+      async ({ body, params }) => {
+        const { id } = params;
+        const updateRequest = {
+          body,
+          params: { id: Number(id) }
+        };
+        const result = await updateMovie(updateRequest);
+        return {
+          status: result.status,
+          body: result.body,
+        };
+      },
+      {
+        body: t.Object({
+          title: t.String(),
+          year: t.Number(),
+          // genreIds: t.Array(t.Number()),
+          poster: t.String(),
+          // castIds: t.Array(t.Number()),
+          // reviewIds: t.Array(t.Number()),
+        }),
       }
+    )
+    .delete('/:id/delete', 
+      async ({ params }) => {
+        const { id } = params
+        const deleteMovieRequest = {
+          params: { id: Number(id) }
+        }
 
-      const result = await deleteMovie(deleteMovieRequest)
-      return {
-        status: result.status,
-        body: result.body
+        const result = await deleteMovie(deleteMovieRequest)
+        return {
+          status: result.status,
+          body: result.body
+        }
       }
-    }
-  )
-  .get('/movies', 
-    async () => {
-      const result = await fetchAllMovies()
+    )
+    .get('/', 
+      async () => {
+        const result = await fetchAllMovies()
 
-      return {
-        status: result.status,
-        body: result.body
+        return {
+          status: result.status,
+          body: result.body
+        }
       }
-    }
-  )
+    )
+    .get('/:id', 
+      async ({params}) => {
+        const { id } = params
+        const fetchMovieRequest = {
+          params: { id: Number(id) }
+        }
+        const result = await getUniqueMovie(fetchMovieRequest)
+
+        return {
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+  })
   .listen(3000);
 
 console.log(
