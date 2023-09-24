@@ -29,7 +29,6 @@ model Person {
   updatedAt DateTime @updatedAt
   name String
   age Int
-  type String
   bio String @db.Text
   // movies Movie[]
 }

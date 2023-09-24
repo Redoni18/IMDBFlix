@@ -75,15 +75,14 @@ export async function updateMovie(
       data: movieDataToUpdate
     })
 
-    // Create a new movie in the database
     return {
-      status: 200, // OK
+      status: 200,
       body: updatedMovie,
     };
   } catch (error) {
-    console.error('Error creating movie:', error);
+    console.error('Error updateing movie:', error);
     return {
-      status: 500, // Internal Server Error
+      status: 500,
       body: { error: 'Internal Server Error' },
     };
   }

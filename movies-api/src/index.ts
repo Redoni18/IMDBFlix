@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
 import { createMovie, deleteMovie, fetchAllMovies, getUniqueMovie, updateMovie } from "./controllers/movies";
+import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast } from './controllers/cast';
 
 const prisma = new PrismaClient();
 
@@ -119,6 +120,90 @@ const app = new Elysia()
           params: { id: Number(id) }
         }
         const result = await getUniqueMovie(fetchMovieRequest)
+
+        return {
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+  })
+  .group('/cast', (app) => {
+    return app
+    .post('/create', 
+      async ({ body }) => {
+        const result = await createCast({ body });
+        return {
+          status: result.status,
+          body: result.body
+        }
+      },
+      {
+        body: t.Object({
+          name: t.String(),
+          age: t.Number(),
+          // genreIds: t.Array(t.Number()),
+          bio: t.String(),
+          // castIds: t.Array(t.Number()),
+          // reviewIds: t.Array(t.Number()),
+        }),
+      }
+    )
+    .put('/:id/update', 
+      async ({ body, params }) => {
+        const { id } = params;
+        const updateRequest = {
+          body,
+          params: { id: Number(id) }
+        };
+        const result = await updateCast(updateRequest);
+        return {
+          status: result.status,
+          body: result.body,
+        };
+      },
+      {
+        body: t.Object({
+          name: t.String(),
+          age: t.Number(),
+          // genreIds: t.Array(t.Number()),
+          bio: t.String(),
+          // castIds: t.Array(t.Number()),
+          // reviewIds: t.Array(t.Number()),
+        }),
+      }
+    )
+    .delete('/:id/delete', 
+      async ({ params }) => {
+        const { id } = params
+        const deleteCastRequest = {
+          params: { id: Number(id) }
+        }
+
+        const result = await deleteCast(deleteCastRequest)
+        return {
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+    .get('/', 
+      async () => {
+        const result = await fetchAllActors()
+
+        return {
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+    .get('/:id', 
+      async ({params}) => {
+        const { id } = params
+        const fetchCastParams = {
+          params: { id: Number(id) }
+        }
+        const result = await getUniqueCast(fetchCastParams)
 
         return {
           status: result.status,
