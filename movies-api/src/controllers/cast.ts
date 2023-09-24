@@ -17,20 +17,20 @@ export async function createCast(
         name: body.name,
         age: body.age,
         bio: body.bio,
-        // movies: {
-        //   connect: body.movieIds.map((id) => ({ id })),
-        // },
+        movies: {
+          connect: body.movies.map((id: number) => ({ id })),
+        },
       },
-    //   include: {
-    //     movies: true, // Fetch the connected movies
-    //   },
+      include: {
+        movies: true,
+      },
     });
 
     // Extract the relevant data for the response
     const simplifiedCast = {
       name: newCast.name,
       age: newCast.age,
-    //   movieIds: newCast.movies.map((movie) => movie.id),
+      movies: newCast.movies.map((movie) => movie.id),
       bio: newCast.bio,
     };
 
@@ -56,18 +56,33 @@ export async function updateCast(
     const { body } = request;
     const { id }: { id: number} = request.params
 
-    const castDataToUpdate = body
-
-    const updatedCast: Cast = await prisma.person.update({
-      where: {
-          id: Number(id)
-      },
-      data: castDataToUpdate
-    })
+    const newCast = await prisma.person.update({
+        where: {
+            id: Number(id)
+        },
+        data: {
+          name: body.name,
+          age: body.age,
+          bio: body.bio,
+          movies: {
+            connect: body.movies.map((id: number) => ({ id })),
+          },
+        },
+        include: {
+          movies: true,
+        },
+    });
+  
+    const simplifiedCast = {
+        name: newCast.name,
+        age: newCast.age,
+        movies: newCast.movies.map((movie) => movie.id),
+        bio: newCast.bio,
+    };
 
     return {
       status: 200,
-      body: updatedCast,
+      body: simplifiedCast,
     };
   } catch (error) {
     console.error('Error updating cast:', error);
@@ -113,7 +128,11 @@ export async function deleteCast(
 
 export async function fetchAllActors(): Promise<FetchAllCastResponse> {
   try {
-    const allCast = await prisma.person.findMany();
+    const allCast = await prisma.person.findMany({
+        include: {
+            movies: true,
+        },
+    });
 
     return {
       status: 200,
@@ -137,7 +156,10 @@ export async function getUniqueCast(
     const cast = await prisma.person.findUnique({
       where: {
         id: Number(id)
-      }
+      },
+      include: {
+        movies: true,
+      },
     })
 
     if (!cast) {

@@ -3,7 +3,7 @@ export interface Movie {
     year: number;
     // genreIds: number[];
     poster: string;
-    // castIds: number[];
+    cast: number[];
     // reviewIds: number[];
 }
 

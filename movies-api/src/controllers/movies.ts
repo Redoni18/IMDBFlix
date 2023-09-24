@@ -20,18 +20,18 @@ export async function createMovie(
         // genre: {
         //   connect: body.genreIds.map((id) => ({ id })),
         // },
-        // cast: {
-        //   connect: body.castIds.map((id) => ({ id })),
-        // },
+        cast: {
+          connect: body.cast.map((id) => ({ id })),
+        },
         // reviews: {
         //   connect: body.reviewIds.map((id) => ({ id })),
         // },
       },
-    //   include: {
-    //     genre: true, // Fetch the connected genres
-    //     cast: true, // Fetch the connected cast members
-    //     reviews: true, // Fetch the connected reviews
-    //   },
+      include: {
+        // genre: true, // Fetch the connected genres
+        cast: true, // Fetch the connected cast members
+        // reviews: true, // Fetch the connected reviews
+      },
     });
 
     // Extract the relevant data for the response
@@ -40,7 +40,7 @@ export async function createMovie(
       year: newMovie.year,
     //   genreIds: newMovie.genre.map((genre) => genre.id),
       poster: newMovie.poster,
-    //   castIds: newMovie.cast.map((person) => person.id),
+      cast: newMovie.cast.map((person) => person.id),
     //   reviewIds: newMovie.reviews.map((review) => review.id),
     };
 
@@ -66,18 +66,33 @@ export async function updateMovie(
     const { body } = request;
     const { id }: { id: number} = request.params
 
-    const movieDataToUpdate = body
+      const updatedMovie = await prisma.movie.update({
+        where: {
+            id: Number(id)
+        },
+        data: {
+          title: body.title,
+          year: body.year,
+          poster: body.poster,
+          cast: {
+            connect: body.cast.map((id: number) => ({ id })),
+          },
+        },
+        include: {
+          cast: true,
+        },
+    });
 
-    const updatedMovie: Movie = await prisma.movie.update({
-      where: {
-          id: Number(id)
-      },
-      data: movieDataToUpdate
-    })
+    const simplifiedMovie = {
+        title: updatedMovie.title,
+        year: updatedMovie.year,
+        cast: updatedMovie.cast.map((cast) => cast.id),
+        poster: updatedMovie.poster,
+    };
 
     return {
       status: 200,
-      body: updatedMovie,
+      body: simplifiedMovie,
     };
   } catch (error) {
     console.error('Error updateing movie:', error);
@@ -123,7 +138,11 @@ export async function deleteMovie(
 
 export async function fetchAllMovies(): Promise<FetchAllMoviesResponse> {
   try {
-    const allMovies = await prisma.movie.findMany();
+    const allMovies = await prisma.movie.findMany({
+      include: {
+        cast: true
+      }
+    });
 
     return {
       status: 200, // OK
@@ -147,6 +166,9 @@ export async function getUniqueMovie(
     const movie = await prisma.movie.findUnique({
       where: {
         id: Number(id)
+      },
+      include: {
+        cast: true
       }
     })
 

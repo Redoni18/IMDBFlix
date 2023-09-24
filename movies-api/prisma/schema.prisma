@@ -18,7 +18,7 @@ model Movie {
   year Int
   // genre Genre[]
   poster String
-  // cast Person[]
+  cast Person[]
   // reviews Review[]
   // episodes Episode[]
 }
@@ -30,7 +30,7 @@ model Person {
   name String
   age Int
   bio String @db.Text
-  // movies Movie[]
+  movies Movie[]
 }
 
 model Genre {
