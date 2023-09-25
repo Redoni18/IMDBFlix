@@ -3,7 +3,7 @@ import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
 import { createMovie, deleteMovie, fetchAllMovies, getUniqueMovie, updateMovie } from "./controllers/movies";
 import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast} from './controllers/cast';
-import { createGenre } from './controllers/genre';
+import { createGenre, updateGenre } from './controllers/genre';
 
 const prisma = new PrismaClient();
 
@@ -220,6 +220,26 @@ const app = new Elysia()
           status: result.status,
           body: result.body
         }
+      },
+      {
+        body: t.Object({
+          title: t.String(),
+          movies: t.Array(t.Number())
+        })
+      }
+    )
+    .put('/:id/update',
+      async ({body, params}) => {
+        const { id } = params;
+        const updateRequest = {
+          body,
+          params: { id: Number(id) }
+        };
+        const result = await updateGenre(updateRequest);
+        return {
+          status: result.status,
+          body: result.body,
+        };
       },
       {
         body: t.Object({

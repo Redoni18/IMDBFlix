@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import { CreateGenreRequest, CreateGenreResponse } from "../type/Genre"
+import { CreateGenreRequest, CreateGenreResponse, UpdateGenreRequest, UpdateGenreResponse } from "../type/Genre"
 
 const prisma = new PrismaClient()
 
@@ -34,6 +34,45 @@ export async function createGenre(
         return {
             status: 500,
             body: { error: 'Internal Server Error' }
+        }
+    }
+}
+
+export async function updateGenre(
+    request: UpdateGenreRequest
+): Promise<UpdateGenreResponse> {
+    try {
+        const { body } = request
+        const { id }: { id: number } = request.params
+
+        const updatedGenre = await prisma.genre.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                title: body.title,
+                movies: {
+                    connect: body.movies.map((id: number) => ({id}))
+                }
+            },
+            include: {
+                movies: true
+            }
+        })
+
+        const simplifiedObject = {
+            title: updatedGenre.title,
+            movies: updatedGenre.movies.map((movie: {id: number}) => movie.id)
+        }
+
+        return {
+            status: 200,
+            body: simplifiedObject
+        }
+    } catch {
+        return {
+            status: 500,
+            body: { error: 'Internal Sever Error' }
         }
     }
 }
