@@ -1,6 +1,6 @@
 export interface Genre {
     title: string,
-    movies: number[]
+    movies?: number[]
 }
 
 export interface CreateGenreRequest {

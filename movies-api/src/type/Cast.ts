@@ -1,7 +1,7 @@
 export interface Cast {
     name: string;
     age: number;
-    movies: number[];
+    movies?: number[];
     bio: string;
 }
 

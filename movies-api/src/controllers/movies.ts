@@ -23,9 +23,6 @@ export async function createMovie(
         genres: {
           connect: body.genres.map((id) => ({ id })),
         },
-        reviews: {
-          connect: body.reviews.map((id) => ({ id })),
-        },
       },
       include: {
         cast: true, // Fetch the connected cast members
@@ -41,7 +38,6 @@ export async function createMovie(
       poster: newMovie.poster,
       cast: newMovie.cast.map((person: { id: number }) => person.id),
       genres: newMovie.genres.map((genre: { id: number }) => genre.id),
-      reviews: newMovie.reviews.map((review: { id: number }) => review.id),
     };
 
     return {
@@ -79,10 +75,7 @@ export async function updateMovie(
           },
           genres: {
             connect: body.genres.map((id: number) => ({ id })),
-          },
-          reviews: {
-            connect: body.reviews.map((id) => ({ id })),
-          },
+          }
         },
         include: {
           cast: true,
@@ -97,7 +90,6 @@ export async function updateMovie(
         poster: updatedMovie.poster,
         cast: updatedMovie.cast.map((cast: { id: number }) => cast.id),
         genres: updatedMovie.genres.map((genre: { id: number }) => genre.id),
-        reviews: updatedMovie.reviews.map((review: { id: number }) => review.id),
     };
 
     return {

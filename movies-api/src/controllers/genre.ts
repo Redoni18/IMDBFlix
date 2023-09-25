@@ -12,9 +12,6 @@ export async function createGenre(
         const newGenre = await prisma.genre.create({
             data: {
                 title: body.title,
-                movies: {
-                    connect: body.movies.map((id: number) => ({ id }))
-                }
             },
             include: {
                 movies: true
@@ -23,7 +20,6 @@ export async function createGenre(
 
         const simplifiedObject = {
             title: newGenre.title,
-            movies: newGenre.movies.map((movie: {id: number}) => movie.id)  
         };
     
         return {
@@ -51,9 +47,6 @@ export async function updateGenre(
             },
             data: {
                 title: body.title,
-                movies: {
-                    connect: body.movies.map((id: number) => ({id}))
-                }
             },
             include: {
                 movies: true
@@ -62,7 +55,6 @@ export async function updateGenre(
 
         const simplifiedObject = {
             title: updatedGenre.title,
-            movies: updatedGenre.movies.map((movie: {id: number}) => movie.id)
         }
 
         return {

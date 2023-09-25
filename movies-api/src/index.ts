@@ -63,7 +63,6 @@ const app = new Elysia()
           poster: t.String(),
           cast: t.Array(t.Number()),
           genres: t.Array(t.Number()),
-          reviews: t.Array(t.Number()),
         }),
       }
     )
@@ -87,7 +86,6 @@ const app = new Elysia()
           poster: t.String(),
           cast: t.Array(t.Number()),
           genres: t.Array(t.Number()),
-          reviews: t.Array(t.Number()),
         }),
       }
     )
@@ -144,7 +142,6 @@ const app = new Elysia()
         body: t.Object({
           name: t.String(),
           age: t.Number(),
-          movies: t.Array(t.Number()),
           bio: t.String(),
         }),
       }
@@ -166,7 +163,6 @@ const app = new Elysia()
         body: t.Object({
           name: t.String(),
           age: t.Number(),
-          movies: t.Array(t.Number()),
           bio: t.String(),
         }),
       }
@@ -223,7 +219,6 @@ const app = new Elysia()
       {
         body: t.Object({
           title: t.String(),
-          movies: t.Array(t.Number())
         })
       }
     )
@@ -243,7 +238,6 @@ const app = new Elysia()
       {
         body: t.Object({
           title: t.String(),
-          movies: t.Array(t.Number())
         })
       }
     )

@@ -17,9 +17,6 @@ export async function createCast(
         name: body.name,
         age: body.age,
         bio: body.bio,
-        movies: {
-          connect: body.movies.map((id: number) => ({ id })),
-        },
       },
       include: {
         movies: true,
@@ -30,7 +27,6 @@ export async function createCast(
     const simplifiedCast = {
       name: newCast.name,
       age: newCast.age,
-      movies: newCast.movies.map((movie) => movie.id),
       bio: newCast.bio,
     };
 
@@ -64,9 +60,6 @@ export async function updateCast(
           name: body.name,
           age: body.age,
           bio: body.bio,
-          movies: {
-            connect: body.movies.map((id: number) => ({ id })),
-          },
         },
         include: {
           movies: true,
@@ -76,7 +69,6 @@ export async function updateCast(
     const simplifiedCast = {
         name: newCast.name,
         age: newCast.age,
-        movies: newCast.movies.map((movie) => movie.id),
         bio: newCast.bio,
     };
 
