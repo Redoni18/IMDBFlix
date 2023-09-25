@@ -3,7 +3,7 @@ import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
 import { createMovie, deleteMovie, fetchAllMovies, getUniqueMovie, updateMovie } from "./controllers/movies";
 import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast} from './controllers/cast';
-import { createGenre, updateGenre } from './controllers/genre';
+import { createGenre, deleteGenre, fetchAllGenres, getUniqueGenre, updateGenre } from './controllers/genre';
 
 const prisma = new PrismaClient();
 
@@ -202,8 +202,6 @@ const app = new Elysia()
         }
         const result = await getUniqueCast(fetchCastParams)
 
-        console.log(result)
-
         return {
           status: result.status,
           body: result.body
@@ -246,6 +244,47 @@ const app = new Elysia()
           title: t.String(),
           movies: t.Array(t.Number())
         })
+      }
+    )
+    .delete('/:id/delete',
+      async ({ params }) => {
+        const { id } = params
+        const deletedGenre = {
+          params: { id: Number(id) }
+        }
+
+        const result = await deleteGenre(deletedGenre)
+
+        return {
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+    .get('/',
+      async () => {
+        const result = await fetchAllGenres()
+
+        return {
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+    .get('/:id',
+      async ({ params }) => {
+        const { id } = params
+
+        const fetchGenreParams = {
+          params: { id: Number(id) }
+        }
+
+        const result = await getUniqueGenre(fetchGenreParams)
+
+        return {
+          status: result.status,
+          body: result.body
+        }
       }
     )
   })
