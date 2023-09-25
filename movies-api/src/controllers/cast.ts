@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Cast, CreateCastRequest, CreateCastResponse, DeleteCastRequest, DeleteCastResponse, FetchAllCastResponse, GetUniqueCastRequest, GetUniqueCastResponse, UpdateCastRequest, UpdateCastResponse } from "../type/Cast"
+import { CreateCastRequest, CreateCastResponse, DeleteCastRequest, DeleteCastResponse, FetchAllCastResponse, GetUniqueCastRequest, GetUniqueCastResponse, UpdateCastRequest, UpdateCastResponse } from "../type/Cast"
 
 const prisma = new PrismaClient();
 

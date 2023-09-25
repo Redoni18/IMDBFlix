@@ -1,9 +1,9 @@
 export interface Movie {
     title: string;
     year: number;
-    // genreIds: number[];
     poster: string;
     cast: number[];
+    genres: number[];
     // reviewIds: number[];
 }
 

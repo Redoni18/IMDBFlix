@@ -16,7 +16,7 @@ model Movie {
   updatedAt DateTime @updatedAt
   title String
   year Int
-  // genre Genre[]
+  genres Genre[]
   poster String
   cast Person[]
   // reviews Review[]
@@ -38,7 +38,7 @@ model Genre {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title String
-  // movie Movie[]
+  movies Movie[]
 }
 
 model Review {

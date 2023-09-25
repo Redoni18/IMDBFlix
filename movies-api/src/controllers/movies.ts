@@ -17,19 +17,19 @@ export async function createMovie(
         title: body.title,
         year: body.year,
         poster: body.poster,
-        // genre: {
-        //   connect: body.genreIds.map((id) => ({ id })),
-        // },
         cast: {
           connect: body.cast.map((id) => ({ id })),
+        },
+        genres: {
+          connect: body.genres.map((id) => ({ id })),
         },
         // reviews: {
         //   connect: body.reviewIds.map((id) => ({ id })),
         // },
       },
       include: {
-        // genre: true, // Fetch the connected genres
         cast: true, // Fetch the connected cast members
+        genres: true, // Fetch the connected genres
         // reviews: true, // Fetch the connected reviews
       },
     });
@@ -38,9 +38,9 @@ export async function createMovie(
     const simplifiedMovie = {
       title: newMovie.title,
       year: newMovie.year,
-    //   genreIds: newMovie.genre.map((genre) => genre.id),
       poster: newMovie.poster,
-      cast: newMovie.cast.map((person) => person.id),
+      cast: newMovie.cast.map((person: { id: number }) => person.id),
+      genres: newMovie.genres.map((genre : { id: number }) => genre.id),
     //   reviewIds: newMovie.reviews.map((review) => review.id),
     };
 
@@ -77,17 +77,22 @@ export async function updateMovie(
           cast: {
             connect: body.cast.map((id: number) => ({ id })),
           },
+          genres: {
+            connect: body.genres.map((id: number) => ({ id })),
+          },
         },
         include: {
           cast: true,
+          genres: true
         },
     });
 
     const simplifiedMovie = {
         title: updatedMovie.title,
         year: updatedMovie.year,
-        cast: updatedMovie.cast.map((cast) => cast.id),
         poster: updatedMovie.poster,
+        cast: updatedMovie.cast.map((cast: { id: number }) => cast.id),
+        genres: updatedMovie.genres.map((genre: { id: number }) => genre.id),
     };
 
     return {
@@ -140,7 +145,8 @@ export async function fetchAllMovies(): Promise<FetchAllMoviesResponse> {
   try {
     const allMovies = await prisma.movie.findMany({
       include: {
-        cast: true
+        cast: true,
+        genres: true
       }
     });
 
@@ -168,7 +174,8 @@ export async function getUniqueMovie(
         id: Number(id)
       },
       include: {
-        cast: true
+        cast: true,
+        genres: true
       }
     })
 

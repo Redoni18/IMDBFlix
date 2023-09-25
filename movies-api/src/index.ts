@@ -3,6 +3,7 @@ import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
 import { createMovie, deleteMovie, fetchAllMovies, getUniqueMovie, updateMovie } from "./controllers/movies";
 import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast} from './controllers/cast';
+import { createGenre } from './controllers/genre';
 
 const prisma = new PrismaClient();
 
@@ -58,9 +59,9 @@ const app = new Elysia()
         body: t.Object({
           title: t.String(),
           year: t.Number(),
-          // genreIds: t.Array(t.Number()),
           poster: t.String(),
           cast: t.Array(t.Number()),
+          genres: t.Array(t.Number()),
           // reviewIds: t.Array(t.Number()),
         }),
       }
@@ -82,9 +83,9 @@ const app = new Elysia()
         body: t.Object({
           title: t.String(),
           year: t.Number(),
-          // genreIds: t.Array(t.Number()),
           poster: t.String(),
           cast: t.Array(t.Number()),
+          genres: t.Array(t.Number()),
           // reviewIds: t.Array(t.Number()),
         }),
       }
@@ -207,6 +208,24 @@ const app = new Elysia()
           status: result.status,
           body: result.body
         }
+      }
+    )
+  })
+  .group('/genres', (app) => {
+    return app
+    .post('/create',
+      async ({ body }) => {
+        const result = await createGenre({ body })
+        return {
+          status: result.status,
+          body: result.body
+        }
+      },
+      {
+        body: t.Object({
+          title: t.String(),
+          movies: t.Array(t.Number())
+        })
       }
     )
   })
