@@ -4,6 +4,7 @@ import { swagger } from '@elysiajs/swagger'
 import { createMovie, deleteMovie, fetchAllMovies, getUniqueMovie, updateMovie } from "./controllers/movies";
 import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast} from './controllers/cast';
 import { createGenre, deleteGenre, fetchAllGenres, getUniqueGenre, updateGenre } from './controllers/genre';
+import { createReview } from './controllers/reviews';
 
 const prisma = new PrismaClient();
 
@@ -62,7 +63,7 @@ const app = new Elysia()
           poster: t.String(),
           cast: t.Array(t.Number()),
           genres: t.Array(t.Number()),
-          // reviewIds: t.Array(t.Number()),
+          reviews: t.Array(t.Number()),
         }),
       }
     )
@@ -86,7 +87,7 @@ const app = new Elysia()
           poster: t.String(),
           cast: t.Array(t.Number()),
           genres: t.Array(t.Number()),
-          // reviewIds: t.Array(t.Number()),
+          reviews: t.Array(t.Number()),
         }),
       }
     )
@@ -285,6 +286,25 @@ const app = new Elysia()
           status: result.status,
           body: result.body
         }
+      }
+    )
+  })
+  .group('/reviews', (app) => {
+    return app
+    .post('/create',
+      async ({ body }) => {
+        const result = await createReview({ body })
+        
+        return {
+          status: result.status,
+          body: result.body
+        }
+      },
+      {
+        body: t.Object({
+          comment: t.String(),
+          movieId: t.Number() 
+        })
       }
     )
   })

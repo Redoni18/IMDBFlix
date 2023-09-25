@@ -4,7 +4,7 @@ export interface Movie {
     poster: string;
     cast: number[];
     genres: number[];
-    // reviewIds: number[];
+    reviews: number[];
 }
 
 export interface CreateMovieRequest {

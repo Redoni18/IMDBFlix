@@ -23,14 +23,14 @@ export async function createMovie(
         genres: {
           connect: body.genres.map((id) => ({ id })),
         },
-        // reviews: {
-        //   connect: body.reviewIds.map((id) => ({ id })),
-        // },
+        reviews: {
+          connect: body.reviews.map((id) => ({ id })),
+        },
       },
       include: {
         cast: true, // Fetch the connected cast members
         genres: true, // Fetch the connected genres
-        // reviews: true, // Fetch the connected reviews
+        reviews: true, // Fetch the connected reviews
       },
     });
 
@@ -40,8 +40,8 @@ export async function createMovie(
       year: newMovie.year,
       poster: newMovie.poster,
       cast: newMovie.cast.map((person: { id: number }) => person.id),
-      genres: newMovie.genres.map((genre : { id: number }) => genre.id),
-    //   reviewIds: newMovie.reviews.map((review) => review.id),
+      genres: newMovie.genres.map((genre: { id: number }) => genre.id),
+      reviews: newMovie.reviews.map((review: { id: number }) => review.id),
     };
 
     return {
@@ -80,10 +80,14 @@ export async function updateMovie(
           genres: {
             connect: body.genres.map((id: number) => ({ id })),
           },
+          reviews: {
+            connect: body.reviews.map((id) => ({ id })),
+          },
         },
         include: {
           cast: true,
-          genres: true
+          genres: true,
+          reviews: true
         },
     });
 
@@ -93,6 +97,7 @@ export async function updateMovie(
         poster: updatedMovie.poster,
         cast: updatedMovie.cast.map((cast: { id: number }) => cast.id),
         genres: updatedMovie.genres.map((genre: { id: number }) => genre.id),
+        reviews: updatedMovie.reviews.map((review: { id: number }) => review.id),
     };
 
     return {
@@ -146,7 +151,8 @@ export async function fetchAllMovies(): Promise<FetchAllMoviesResponse> {
     const allMovies = await prisma.movie.findMany({
       include: {
         cast: true,
-        genres: true
+        genres: true,
+        reviews: true
       }
     });
 
@@ -175,7 +181,8 @@ export async function getUniqueMovie(
       },
       include: {
         cast: true,
-        genres: true
+        genres: true,
+        reviews: true
       }
     })
 
