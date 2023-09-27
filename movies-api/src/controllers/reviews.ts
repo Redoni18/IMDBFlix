@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { CreateReviewRequest, CreateReviewResponse, UpdateReviewRequest, UpdateReviewResponse } from "../type/Review"
+import { CreateReviewRequest, CreateReviewResponse, DeleteReviewRequest, DeleteReviewResponse, UpdateReviewRequest, UpdateReviewResponse } from "../type/Review"
 
 const prisma =  new PrismaClient()
 
@@ -51,6 +51,38 @@ export async function updateReview (
         }
     } catch (error) {
         console.error('Error updating review', error)
+        return {
+            status: 500,
+            body: { error: "Internal Server Error" }
+        }
+    }
+}
+
+export async function deleteReview (
+    request: DeleteReviewRequest
+): Promise<DeleteReviewResponse> {
+    try {
+        const { id } = request.params
+
+        const deletedReview = await prisma.review.delete({
+            where: {
+                id: Number(id)
+            }
+        })
+
+        if(!deletedReview) {
+            return {
+                status: 404,
+                body: { error: "Review not found" }
+            }
+        }
+
+        return {
+            status: 204,
+            body: { successMessage: "Review deleted successfully" }
+        }
+    } catch (error) {
+        console.error("Error deleting review: ", error)
         return {
             status: 500,
             body: { error: "Internal Server Error" }
