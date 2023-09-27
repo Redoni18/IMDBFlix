@@ -13,7 +13,7 @@ export interface CreateReviewResponse {
 }
 
 export interface UpdateReviewRequest {
-    body: Review;
+    body: { comment: string };
     params: { id: number }
 }
 
