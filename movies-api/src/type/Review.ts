@@ -31,11 +31,11 @@ export interface DeleteReviewResponse {
     body: { successMessage: string } | { error: string }
 }
 
-export interface FetchMoviewReviewsRequest {
+export interface FetchMovieReviewsRequest {
     params: { movieId: number }
 }
 
-export interface FetchMoviewReviewsResponse {
+export interface FetchMovieReviewsResponse {
     status: number;
     body: Review[] | { error: string }
 }

@@ -4,7 +4,7 @@ import { swagger } from '@elysiajs/swagger'
 import { createMovie, deleteMovie, fetchAllMovies, getUniqueMovie, updateMovie } from "./controllers/movies";
 import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast} from './controllers/cast';
 import { createGenre, deleteGenre, fetchAllGenres, getUniqueGenre, updateGenre } from './controllers/genre';
-import { createReview, deleteReview, updateReview } from './controllers/reviews';
+import { createReview, deleteReview, fetchAllReviews, getUniqueReview, updateReview } from './controllers/reviews';
 
 const prisma = new PrismaClient();
 
@@ -328,6 +328,38 @@ const app = new Elysia()
         }
 
         const result = await deleteReview(deletedReview)
+
+        return {
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+    .get('/movie/:movieId/reviews',
+      async ({ params }) => {
+        const { movieId } = params
+
+        const fetchReviewsParams = {
+          params: { movieId: Number(movieId) }
+        }
+
+        const result = await fetchAllReviews(fetchReviewsParams)
+
+        return {
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+    .get('/:id',
+      async ({ params }) => {
+        const { id } = params
+
+        const fetchReviewsParams = {
+          params: { id: Number(id) }
+        }
+
+        const result = await getUniqueReview(fetchReviewsParams)
 
         return {
           status: result.status,

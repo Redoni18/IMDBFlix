@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { CreateReviewRequest, CreateReviewResponse, DeleteReviewRequest, DeleteReviewResponse, UpdateReviewRequest, UpdateReviewResponse } from "../type/Review"
+import { CreateReviewRequest, CreateReviewResponse, DeleteReviewRequest, DeleteReviewResponse, FetchMovieReviewsRequest, FetchMovieReviewsResponse, FetchUniqueReviewRequest, FetchUniqueReviewResponse, UpdateReviewRequest, UpdateReviewResponse } from "../type/Review"
 
 const prisma =  new PrismaClient()
 
@@ -86,6 +86,62 @@ export async function deleteReview (
         return {
             status: 500,
             body: { error: "Internal Server Error" }
+        }
+    }
+}
+
+export async function fetchAllReviews(
+    request: FetchMovieReviewsRequest
+): Promise<FetchMovieReviewsResponse> {
+    try {
+        const { movieId } = request.params
+
+        const allReviews = await prisma.review.findMany({
+            where: {
+                movieId: Number(movieId)
+            }
+        })
+
+        return {
+            status: 200,
+            body: allReviews
+        }
+    } catch (error) {
+        console.error("Error fetching all reviews: ", error)
+        return {
+            status: 500,
+            body: { error: "Internal Server Error" }
+        }
+    }
+}
+
+export async function getUniqueReview(
+    request: FetchUniqueReviewRequest
+): Promise<FetchUniqueReviewResponse> {
+    try {
+        const { id }: {id: number} = request.params 
+
+        const review = await prisma.review.findUnique({
+            where: {
+                id: Number(id)
+            }
+        })
+    
+        if (!review) {
+            return {
+                status: 404,
+                body: { error: 'Review not found' },
+            };
+        }
+    
+        return {
+            status: 200,
+            body: review,
+        }
+    } catch (err) {
+        return {
+            status: 500,
+            body: { error: 'Internal Server Error' },
         }
     }
 }
