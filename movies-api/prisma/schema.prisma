@@ -20,6 +20,10 @@ model Movie {
   poster String
   cast Person[]
   reviews Review[]
+
+  startYear Int?
+  endYear Int?
+  seasons Int?
   episodes Episode[]
 }
 
