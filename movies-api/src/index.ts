@@ -6,7 +6,7 @@ import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast} from
 import { createGenre, deleteGenre, fetchAllGenres, getUniqueGenre, updateGenre } from './controllers/genre';
 import { createReview, deleteReview, fetchAllReviews, getUniqueReview, updateReview } from './controllers/reviews';
 import { MediaType } from '@prisma/client'
-import { createEpisode, updateEpisode } from './controllers/episodes';
+import { createEpisode, deleteEpisode, fetchTvSeriesEpisodes, getUniqueEpisode, updateEpisode } from './controllers/episodes';
 
 const prisma = new PrismaClient();
 
@@ -452,6 +452,53 @@ const app = new Elysia()
           year: t.Number(),
           mediaId: t.Number()
         })
+      }
+    )
+    .delete('/:id/delete', 
+      async ({ params }) => {
+        const { id } = params
+        const deleteEpisodeRequest = {
+          params: { id: Number(id) }
+        }
+
+        const result = await deleteEpisode(deleteEpisodeRequest)
+
+        return {
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+    .get('/media/:mediaId/episodes',
+      async ({ params }) => {
+        const { mediaId } = params
+
+        const fetchAllMediaEpisodesParams = {
+          params: { mediaId: Number(mediaId) }
+        }
+
+        const result = await fetchTvSeriesEpisodes(fetchAllMediaEpisodesParams)
+      
+        return{
+          status: result.status,
+          body: result.body
+        }
+      }
+    )
+    .get("/:id", 
+      async ({ params }) => {
+        const { id } = params
+
+        const fetchEpisodeParams = {
+          params: { id: Number(id) }
+        }
+
+        const result = await getUniqueEpisode(fetchEpisodeParams)
+
+        return {
+          status: result.status,
+          body: result.body
+        }
       }
     )
   })
