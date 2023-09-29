@@ -14,6 +14,9 @@ export async function createReview(
                 comment: body.comment,
                 mediaId: body.mediaId
             },
+            include: {
+                media: true
+            }
         });
 
         return {
@@ -42,6 +45,9 @@ export async function updateReview (
             },
             data: {
                 comment: body.comment
+            },
+            include: {
+                media: true
             }
         })
 
@@ -99,6 +105,9 @@ export async function fetchAllReviews(
         const allReviews = await prisma.review.findMany({
             where: {
                 mediaId: Number(mediaId)
+            },
+            include: {
+                media: true
             }
         })
 
@@ -124,6 +133,9 @@ export async function getUniqueReview(
         const review = await prisma.review.findUnique({
             where: {
                 id: Number(id)
+            },
+            include: {
+                media: true
             }
         })
     
