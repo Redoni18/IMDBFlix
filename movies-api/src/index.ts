@@ -6,7 +6,7 @@ import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast} from
 import { createGenre, deleteGenre, fetchAllGenres, getUniqueGenre, updateGenre } from './controllers/genre';
 import { createReview, deleteReview, fetchAllReviews, getUniqueReview, updateReview } from './controllers/reviews';
 import { MediaType } from '@prisma/client'
-import { createEpisode } from './controllers/episodes';
+import { createEpisode, updateEpisode } from './controllers/episodes';
 
 const prisma = new PrismaClient();
 
@@ -430,6 +430,27 @@ const app = new Elysia()
           title: t.String(),
           year: t.Number(),
           mediaId: t.Number() 
+        })
+      }
+    )
+    .put('/:id/update',
+      async ({body, params}) => {
+        const { id } = params;
+        const updateRequest = {
+          body,
+          params: { id: Number(id) }
+        };
+        const result = await updateEpisode(updateRequest);
+        return {
+          status: result.status,
+          body: result.body,
+        };
+      },
+      {
+        body: t.Object({
+          title: t.String(),
+          year: t.Number(),
+          mediaId: t.Number()
         })
       }
     )

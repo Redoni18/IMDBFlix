@@ -240,6 +240,7 @@ export async function getMediaBasedOnType(
         cast: true,
         genres: true,
         reviews: true,
+        episodes: true
       }
     })
 
