@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
-import { createMedia, deleteMovie, fetchAllMovies, getUniqueMovie, updateMedia } from "./controllers/movies";
+import { createMedia, deleteMovie, fetchAllMedia, getMediaBasedOnType, getUniqueMovie, updateMedia } from "./controllers/movies";
 import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast} from './controllers/cast';
 import { createGenre, deleteGenre, fetchAllGenres, getUniqueGenre, updateGenre } from './controllers/genre';
 import { createReview, deleteReview, fetchAllReviews, getUniqueReview, updateReview } from './controllers/reviews';
@@ -135,7 +135,7 @@ const app = new Elysia()
     )
     .get('/', 
       async () => {
-        const result = await fetchAllMovies()
+        const result = await fetchAllMedia()
 
         return {
           status: result.status,
@@ -155,6 +155,21 @@ const app = new Elysia()
           status: result.status,
           body: result.body
         }
+      }
+    )
+    .get('/mediaType/:type', 
+      async ({params}) => {
+        const { type } = params;
+        const mediaType: MediaType = type as MediaType;
+        const fetchMovieRequest: { params: { type: MediaType } } = {
+          params: { type: mediaType },
+        };
+        const result = await getMediaBasedOnType(fetchMovieRequest);
+
+        return {
+          status: result.status,
+          body: result.body,
+        };
       }
     )
   })

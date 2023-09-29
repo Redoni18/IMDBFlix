@@ -32,34 +32,6 @@ export interface UpdateMediaResponse {
     body: Media | { error: string };
 }
 
-export interface UpdateTvSeriesRequest {
-    body: {
-        title: string;
-        poster: string;
-        startYear: number;
-        cast: number[];
-        genres: number[];
-        endYear: number;
-        seasons: number;
-        episodes: number[];
-    }
-    params: { id: number }
-}
-
-export interface UpdateTvSeriesResponse {
-    status: number;
-    body: {
-        title: string;
-        poster: string;
-        startYear: number;
-        cast: number[];
-        genres: number[];
-        endYear: number;
-        seasons: number;
-        episodes: number[];
-    } | { error: string }
-}
-
 export interface DeleteMovieRequest {
     params: { id: number };
 }
@@ -83,4 +55,14 @@ export interface GetUniqueMovieRequest {
 export interface GetUniqueMovieResponse {
     status: number;
     body: Media | { error: string };
+}
+
+
+export interface GetMovieOrTvRequest {
+    params: { type: MediaType }
+}
+
+export interface GetMovieOrTvResponse {
+    status: number;
+    body: Media | { error: string }
 }

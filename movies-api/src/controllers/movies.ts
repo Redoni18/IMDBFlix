@@ -1,5 +1,5 @@
 import { MediaType, PrismaClient } from '@prisma/client';
-import { FetchAllMoviesResponse, DeleteMovieRequest, DeleteMovieResponse, GetUniqueMovieRequest, GetUniqueMovieResponse, UpdateMediaRequest, UpdateMediaResponse, CreateMediaRequest, CreateMediaResponse } from '../type/Movie';
+import { FetchAllMoviesResponse, DeleteMovieRequest, DeleteMovieResponse, GetUniqueMovieRequest, GetUniqueMovieResponse, UpdateMediaRequest, UpdateMediaResponse, CreateMediaRequest, CreateMediaResponse, GetMovieOrTvRequest, GetMovieOrTvResponse } from '../type/Movie';
 
 const prisma = new PrismaClient();
 
@@ -167,7 +167,7 @@ export async function deleteMovie(
   }
 }
 
-export async function fetchAllMovies(): Promise<FetchAllMoviesResponse> {
+export async function fetchAllMedia(): Promise<FetchAllMoviesResponse> {
   try {
     const allMovies = await prisma.media.findMany({
       include: {
@@ -222,6 +222,43 @@ export async function getUniqueMovie(
     return {
       status: 500,
       body: { error: 'Internal Server Error' },
+    }
+  }
+}
+
+export async function getMediaBasedOnType(
+  request: GetMovieOrTvRequest
+): Promise<GetMovieOrTvResponse> {
+  try {
+    const { type } = request.params
+
+    const media = await prisma.media.findMany({
+      where: {
+        type: type
+      },
+      include: {
+        cast: true,
+        genres: true,
+        reviews: true,
+      }
+    })
+
+    if(!media) {
+      return {
+        status: 404,
+        body: { error: "Media type not found" }
+      }
+    }
+
+    return {
+      status: 200,
+      body: media
+    }
+  } catch (error) {
+    console.error("Error fetching types of media: ", error)
+    return {
+      status: 500,
+      body: { error: "Internal Server Error" }
     }
   }
 }
