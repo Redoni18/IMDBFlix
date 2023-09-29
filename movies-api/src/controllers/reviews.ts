@@ -12,7 +12,7 @@ export async function createReview(
         const newReview = await prisma.review.create({
             data: {
                 comment: body.comment,
-                movieId: body.movieId
+                mediaId: body.mediaId
             },
         });
 
@@ -94,11 +94,11 @@ export async function fetchAllReviews(
     request: FetchMovieReviewsRequest
 ): Promise<FetchMovieReviewsResponse> {
     try {
-        const { movieId } = request.params
+        const { mediaId } = request.params
 
         const allReviews = await prisma.review.findMany({
             where: {
-                movieId: Number(movieId)
+                mediaId: Number(mediaId)
             }
         })
 

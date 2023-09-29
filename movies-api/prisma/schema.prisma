@@ -10,21 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Movie {
+model Media {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title String
   year Int
-  genres Genre[]
   poster String
   cast Person[]
+  genres Genre[]
   reviews Review[]
-
   startYear Int?
   endYear Int?
   seasons Int?
   episodes Episode[]
+  type MediaType
 }
 
 model Person {
@@ -34,7 +34,7 @@ model Person {
   name String
   age Int
   bio String @db.Text
-  movies Movie[]
+  media Media[]
 }
 
 model Genre {
@@ -42,7 +42,7 @@ model Genre {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title String
-  movies Movie[]
+  media Media[]
 }
 
 model Review {
@@ -50,8 +50,8 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   comment String @db.Text
-  movie Movie @relation(fields: [movieId], references: [id])
-  movieId Int
+  media Media @relation(fields: [mediaId], references: [id])
+  mediaId Int
 }
 
 model Episode {
@@ -60,11 +60,16 @@ model Episode {
   updatedAt DateTime @updatedAt
   title String
   year Int
-  movie Movie @relation(fields: [movieId], references: [id])
-  movieId Int
+  media Media @relation(fields: [mediaId], references: [id])
+  mediaId Int
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+enum MediaType {
+  Movie
+  TvSeries
 }

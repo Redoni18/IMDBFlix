@@ -14,7 +14,7 @@ export async function createGenre(
                 title: body.title,
             },
             include: {
-                movies: true
+                media: true
             }
         })
 
@@ -49,7 +49,7 @@ export async function updateGenre(
                 title: body.title,
             },
             include: {
-                movies: true
+                media: true
             }
         })
 
@@ -105,7 +105,7 @@ export async function fetchAllGenres(): Promise<FetchAllGenresResponse> {
     try {
         const allGenres = await prisma.genre.findMany({
             include: {
-                movies: true
+                media: true
             }
         })
 
@@ -132,7 +132,7 @@ export async function getUniqueGenre(
                 id: Number(id)
             },
             include: {
-                movies: true
+                media: true
             }
         })
 

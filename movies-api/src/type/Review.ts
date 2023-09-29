@@ -1,6 +1,6 @@
 export interface Review {
     comment: string;
-    movieId: number
+    mediaId: number
 }
 
 export interface CreateReviewRequest {
@@ -32,7 +32,7 @@ export interface DeleteReviewResponse {
 }
 
 export interface FetchMovieReviewsRequest {
-    params: { movieId: number }
+    params: { mediaId: number }
 }
 
 export interface FetchMovieReviewsResponse {

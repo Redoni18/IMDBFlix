@@ -19,7 +19,7 @@ export async function createCast(
         bio: body.bio,
       },
       include: {
-        movies: true,
+        media: true,
       },
     });
 
@@ -62,7 +62,7 @@ export async function updateCast(
           bio: body.bio,
         },
         include: {
-          movies: true,
+          media: true,
         },
     });
   
@@ -122,7 +122,7 @@ export async function fetchAllActors(): Promise<FetchAllCastResponse> {
   try {
     const allCast = await prisma.person.findMany({
         include: {
-            movies: true,
+          media: true,
         },
     });
 
@@ -150,7 +150,7 @@ export async function getUniqueCast(
         id: Number(id)
       },
       include: {
-        movies: true,
+        media: true,
       },
     })
 

@@ -1,29 +1,63 @@
-export interface Movie {
+export type MediaType = 'Movie' | 'TvSeries';
+export interface Media {
     title: string;
     year: number;
     poster: string;
     cast: number[];
     genres: number[];
     reviews?: number[];
+    startYear?: number;
+    endYear?: number;
+    seasons?: number;
+    episodes?: number[];
+    type: MediaType
 }
 
-export interface CreateMovieRequest {
-    body: Movie;
+export interface CreateMediaRequest {
+    body: Media;
 }
 
-export interface CreateMovieResponse {
+export interface CreateMediaResponse {
     status: number;
-    body: Movie | { error: string };
+    body: Media | { error: string };
 }
 
-export interface UpdateMovieRequest {
-    body: Movie;
+export interface UpdateMediaRequest {
+    body: Media;
     params: { id: number };
 }
   
-export interface UpdateMovieResponse {
+export interface UpdateMediaResponse {
     status: number;
-    body: Movie | { error: string };
+    body: Media | { error: string };
+}
+
+export interface UpdateTvSeriesRequest {
+    body: {
+        title: string;
+        poster: string;
+        startYear: number;
+        cast: number[];
+        genres: number[];
+        endYear: number;
+        seasons: number;
+        episodes: number[];
+    }
+    params: { id: number }
+}
+
+export interface UpdateTvSeriesResponse {
+    status: number;
+    body: {
+        title: string;
+        poster: string;
+        startYear: number;
+        cast: number[];
+        genres: number[];
+        endYear: number;
+        seasons: number;
+        episodes: number[];
+    } | { error: string }
 }
 
 export interface DeleteMovieRequest {
@@ -39,7 +73,7 @@ export interface FetchAllMoviesRequest {} // mainly here when I need to implemen
 
 export interface FetchAllMoviesResponse {
   status: number;
-  body: Movie[] | { error: string };
+  body: Media[] | { error: string };
 }
 
 export interface GetUniqueMovieRequest {
@@ -48,5 +82,5 @@ export interface GetUniqueMovieRequest {
 
 export interface GetUniqueMovieResponse {
     status: number;
-    body: Movie | { error: string };
+    body: Media | { error: string };
 }

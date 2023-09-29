@@ -1,51 +1,64 @@
-import { PrismaClient } from '@prisma/client';
-import { FetchAllMoviesResponse, CreateMovieRequest, CreateMovieResponse, DeleteMovieRequest, DeleteMovieResponse, Movie, UpdateMovieRequest, UpdateMovieResponse, GetUniqueMovieRequest, GetUniqueMovieResponse } from '../type/Movie';
+import { MediaType, PrismaClient } from '@prisma/client';
+import { FetchAllMoviesResponse, DeleteMovieRequest, DeleteMovieResponse, GetUniqueMovieRequest, GetUniqueMovieResponse, UpdateMediaRequest, UpdateMediaResponse, CreateMediaRequest, CreateMediaResponse } from '../type/Movie';
 
 const prisma = new PrismaClient();
 
 
-//Create new movie
-export async function createMovie(
-  request: CreateMovieRequest
-): Promise<CreateMovieResponse> {
+export async function createMedia(
+  request: CreateMediaRequest
+): Promise<CreateMediaResponse> {
   try {
     const { body } = request;
 
-    // Create a new movie in the database
-    const newMovie = await prisma.movie.create({
+
+    // Create a new media item in the database
+    const newMedia = await prisma.media.create({
       data: {
         title: body.title,
-        year: body.year,
+        year: body.year || 0,
         poster: body.poster,
         cast: {
-          connect: body.cast.map((id) => ({ id })),
+          connect: body.cast.map((id: number) => ({ id })),
         },
         genres: {
-          connect: body.genres.map((id) => ({ id })),
+          connect: body.genres.map((id: number) => ({ id })),
         },
+        episodes: {
+          connect: body.episodes?.map((id: number) => ({ id })) || [],
+        },
+        startYear: body.startYear,
+        endYear: body.endYear,
+        seasons: body.seasons,
+        type: body.type
       },
       include: {
         cast: true, // Fetch the connected cast members
         genres: true, // Fetch the connected genres
         reviews: true, // Fetch the connected reviews
+        episodes: true, // Fetch the connected episodes
       },
     });
 
     // Extract the relevant data for the response
-    const simplifiedMovie = {
-      title: newMovie.title,
-      year: newMovie.year,
-      poster: newMovie.poster,
-      cast: newMovie.cast.map((person: { id: number }) => person.id),
-      genres: newMovie.genres.map((genre: { id: number }) => genre.id),
+    const simplifiedObject = {
+      title: newMedia.title,
+      year: newMedia.year,
+      poster: newMedia.poster,
+      cast: newMedia.cast.map((cast: { id: number }) => cast.id),
+      genres: newMedia.genres.map((genre: { id: number }) => genre.id),
+      episodes: newMedia.episodes?.map((episode: { id: number }) => episode.id) || [],
+      startYear: newMedia.startYear || 0,
+      endYear: newMedia.endYear || 0,
+      seasons: newMedia.seasons || 0,
+      type: newMedia.type, // Include the media type in the response
     };
 
     return {
       status: 201,
-      body: simplifiedMovie,
+      body: simplifiedObject,
     };
   } catch (error) {
-    console.error('Error creating movie:', error);
+    console.error('Error creating media item:', error);
     return {
       status: 500, // Internal Server Error
       body: { error: 'Internal Server Error' },
@@ -54,56 +67,72 @@ export async function createMovie(
 }
 
 
-//update specific movie
-export async function updateMovie(
-    request: UpdateMovieRequest
-): Promise<UpdateMovieResponse> {
+
+export async function updateMedia(
+  request: UpdateMediaRequest
+): Promise<UpdateMediaResponse> {
   try {
     const { body } = request;
-    const { id }: { id: number} = request.params
-
-      const updatedMovie = await prisma.movie.update({
-        where: {
-            id: Number(id)
+    const { id }: { id: number } = request.params;
+    const { type } = body
+    // Update the media item in the database
+    const updatedMedia = await prisma.media.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        title: body.title,
+        year: body.year || 0,
+        poster: body.poster,
+        cast: {
+          connect: body.cast.map((id: number) => ({ id })),
         },
-        data: {
-          title: body.title,
-          year: body.year,
-          poster: body.poster,
-          cast: {
-            connect: body.cast.map((id: number) => ({ id })),
-          },
-          genres: {
-            connect: body.genres.map((id: number) => ({ id })),
-          }
+        genres: {
+          connect: body.genres.map((id: number) => ({ id })),
         },
-        include: {
-          cast: true,
-          genres: true,
-          reviews: true
+        episodes: {
+          connect: body.episodes?.map((id: number) => ({ id })) || [],
         },
+        startYear: body.startYear,
+        endYear: body.endYear,
+        seasons: body.seasons,
+        type: MediaType[type as keyof typeof MediaType] // Set the media type
+      },
+      include: {
+        cast: true, // Fetch the connected cast members
+        genres: true, // Fetch the connected genres
+        reviews: true, // Fetch the connected reviews
+        episodes: true, // Fetch the connected episodes
+      },
     });
 
-    const simplifiedMovie = {
-        title: updatedMovie.title,
-        year: updatedMovie.year,
-        poster: updatedMovie.poster,
-        cast: updatedMovie.cast.map((cast: { id: number }) => cast.id),
-        genres: updatedMovie.genres.map((genre: { id: number }) => genre.id),
+    // Extract the relevant data for the response
+    const simplifiedObject = {
+      title: updatedMedia.title,
+      year: updatedMedia.year,
+      poster: updatedMedia.poster,
+      cast: updatedMedia.cast.map((cast: { id: number }) => cast.id),
+      genres: updatedMedia.genres.map((genre: { id: number }) => genre.id),
+      episodes: updatedMedia.episodes?.map((episode: { id: number }) => episode.id) || [],
+      startYear: updatedMedia.startYear || updatedMedia.year,
+      endYear: updatedMedia.endYear || 0,
+      seasons: updatedMedia.seasons || 0,
+      type: updatedMedia.type, // Include the media type in the response
     };
 
     return {
       status: 200,
-      body: simplifiedMovie,
+      body: simplifiedObject,
     };
   } catch (error) {
-    console.error('Error updateing movie:', error);
+    console.error('Error updating media item:', error);
     return {
-      status: 500,
+      status: 500, // Internal Server Error
       body: { error: 'Internal Server Error' },
     };
   }
 }
+
 
 
 export async function deleteMovie(
@@ -112,7 +141,7 @@ export async function deleteMovie(
   try {
     const { id }: { id: number } = request.params;
 
-    const deletedMovie = await prisma.movie.delete({
+    const deletedMovie = await prisma.media.delete({
       where: {
         id: Number(id),
       },
@@ -140,7 +169,7 @@ export async function deleteMovie(
 
 export async function fetchAllMovies(): Promise<FetchAllMoviesResponse> {
   try {
-    const allMovies = await prisma.movie.findMany({
+    const allMovies = await prisma.media.findMany({
       include: {
         cast: true,
         genres: true,
@@ -167,7 +196,7 @@ export async function getUniqueMovie(
   try {
     const { id }: {id: number} = request.params 
 
-    const movie = await prisma.movie.findUnique({
+    const movie = await prisma.media.findUnique({
       where: {
         id: Number(id)
       },

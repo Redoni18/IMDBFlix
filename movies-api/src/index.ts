@@ -1,10 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
-import { createMovie, deleteMovie, fetchAllMovies, getUniqueMovie, updateMovie } from "./controllers/movies";
+import { createMedia, deleteMovie, fetchAllMovies, getUniqueMovie, updateMedia } from "./controllers/movies";
 import { createCast, deleteCast, fetchAllActors, getUniqueCast, updateCast} from './controllers/cast';
 import { createGenre, deleteGenre, fetchAllGenres, getUniqueGenre, updateGenre } from './controllers/genre';
 import { createReview, deleteReview, fetchAllReviews, getUniqueReview, updateReview } from './controllers/reviews';
+import { MediaType } from '@prisma/client'
 
 const prisma = new PrismaClient();
 
@@ -46,11 +47,11 @@ const app = new Elysia()
       .get('/cast', ({params}) => `id: ${params.id}`)
       .get('/reviews', ({params}) => `id: ${params.id}`)
   })
-  .group('/movies', (app) => {
+  .group('/media', (app) => {
     return app
     .post('/create', 
       async ({ body }) => {
-        const result = await createMovie({ body });
+        const result = await createMedia({ body });
         return {
           status: result.status,
           body: result.body
@@ -63,6 +64,30 @@ const app = new Elysia()
           poster: t.String(),
           cast: t.Array(t.Number()),
           genres: t.Array(t.Number()),
+          type: t.Enum(MediaType)
+        }),
+      }
+    )
+    .post('/create/tv', 
+      async ({ body }) => {
+        const result = await createMedia({ body });
+        return {
+          status: result.status,
+          body: result.body
+        }
+      },
+      {
+        body: t.Object({
+          title: t.String(),
+          year: t.Number(),
+          poster: t.String(),
+          cast: t.Array(t.Number()),
+          genres: t.Array(t.Number()),
+          episodes: t.Array(t.Number()),
+          startYear: t.Number(),
+          endYear: t.Number(),
+          seasons: t.Number(),
+          type: t.Enum(MediaType)
         }),
       }
     )
@@ -73,7 +98,7 @@ const app = new Elysia()
           body,
           params: { id: Number(id) }
         };
-        const result = await updateMovie(updateRequest);
+        const result = await updateMedia(updateRequest);
         return {
           status: result.status,
           body: result.body,
@@ -86,6 +111,11 @@ const app = new Elysia()
           poster: t.String(),
           cast: t.Array(t.Number()),
           genres: t.Array(t.Number()),
+          episodes: t.Array(t.Number()),
+          startYear: t.Number(),
+          endYear: t.Number(),
+          seasons: t.Number(),
+          type: t.Enum(MediaType)
         }),
       }
     )
@@ -297,7 +327,7 @@ const app = new Elysia()
       {
         body: t.Object({
           comment: t.String(),
-          movieId: t.Number() 
+          mediaId: t.Number() 
         })
       }
     )
@@ -335,12 +365,12 @@ const app = new Elysia()
         }
       }
     )
-    .get('/movie/:movieId/reviews',
+    .get('/movie/:mediaId/reviews',
       async ({ params }) => {
-        const { movieId } = params
+        const { mediaId } = params
 
         const fetchReviewsParams = {
-          params: { movieId: Number(movieId) }
+          params: { mediaId: Number(mediaId) }
         }
 
         const result = await fetchAllReviews(fetchReviewsParams)
