@@ -71,7 +71,7 @@ model User {
   username String @unique
   email String @unique
   password String
-  profileImg String?
+  profileImage String?
   bio String? @db.Text
   type Role @default(USER)
 }

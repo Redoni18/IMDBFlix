@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { RegisterRequest, RegisterResponse } from "../type/User";
-import bcrypt from "bcrypt";
+import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "../type/User";
 
 const prisma = new PrismaClient();
 
@@ -11,7 +10,7 @@ type RegisterErrorsResponse = {
 
 type UserResponse = {
   errors?: RegisterErrorsResponse[];
-  user?: RegisterResponse;
+  user?: RegisterResponse | LoginResponse;
 };
 
 export async function createUser(
@@ -27,8 +26,8 @@ export async function createUser(
       return {
         errors: [
           {
-            field: "username",
-            message: "username length must be greater than 2",
+            field: "Username",
+            message: "Username length must be greater than 2",
           },
         ],
       };
@@ -38,8 +37,8 @@ export async function createUser(
       return {
         errors: [
           {
-            field: "email",
-            message: "email length must be greater than 4 characters",
+            field: "Email",
+            message: "Email length must be greater than 4 characters",
           },
         ],
       };
@@ -48,8 +47,8 @@ export async function createUser(
         return {
           errors: [
             {
-              field: "email",
-              message: "please type a valid email",
+              field: "Email",
+              message: "Please type a valid email",
             },
           ],
         };
@@ -60,25 +59,29 @@ export async function createUser(
       return {
         errors: [
           {
-            field: "username",
-            message: "password length must be greater than 8",
+            field: "Password",
+            message: "Password length must be greater than 8",
           },
         ],
       };
     }
+
+    const role = body.email.includes("@imdb") ? 'ADMIN' : 'USER';
 
     const newUser = await prisma.user.create({
       data: {
         username: body.username,
         email: body.email,
         password: hashedPassword,
+        type: role
       },
     });
 
     const simplifiedUser = {
-      username: newUser.username,
-      email: newUser.email,
-      password: newUser.password,
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        type: newUser.type,
     };
 
     return {
@@ -95,4 +98,60 @@ export async function createUser(
       },
     };
   }
+}
+
+
+export async function loginUser(
+    request: LoginRequest
+): Promise<UserResponse> {
+    try {
+        const { body } = request
+
+        const currentUser = await prisma.user.findUnique({
+            where: {
+                email: body.email
+            }
+        })
+
+        if(!currentUser) {
+            return {
+                errors: [{
+                    field: "Email",
+                    message: "Email does not exist",
+                }],
+            }
+        }
+
+        const userWithoutPassword = {
+            id: currentUser.id,
+            username: currentUser.username,
+            email: currentUser.email,
+            type: currentUser.type,
+        };
+
+        const validPassword = await Bun.password.verify(body.password, currentUser.password)
+
+        if(!validPassword) {
+            return {
+                errors: [{
+                    field: "Password",
+                    message: "Password is incorrect"
+                }]
+            }
+        }
+
+        return {
+            user: {
+                status: 200,
+                body: userWithoutPassword
+            }
+        }
+    } catch (error) {
+        return {
+            user: {
+                status: 500,
+                body: {error: "Internal Server Error"}
+            }
+        }
+    }
 }

@@ -7,7 +7,7 @@ import { createGenre, deleteGenre, fetchAllGenres, getUniqueGenre, updateGenre }
 import { createReview, deleteReview, fetchAllReviews, getUniqueReview, updateReview } from './controllers/reviews';
 import { MediaType } from '@prisma/client'
 import { createEpisode, deleteEpisode, fetchTvSeriesEpisodes, getUniqueEpisode, updateEpisode } from './controllers/episodes';
-import { createUser } from './controllers/user';
+import { createUser, loginUser } from './controllers/user';
 import { cors } from '@elysiajs/cors'
 
 const prisma = new PrismaClient();
@@ -504,6 +504,22 @@ app.group('/user', (app) => {
     {
       body: t.Object({
         username: t.String(),
+        email: t.String(),
+        password: t.String() 
+      })
+    }
+  )
+  .post('/login',
+    async ({ body }) => {
+      const result = await loginUser({ body })
+      
+      return {
+        errors: result.errors,
+        user: result.user
+      }
+    },
+    {
+      body: t.Object({
         email: t.String(),
         password: t.String() 
       })

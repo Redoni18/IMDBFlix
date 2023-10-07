@@ -4,18 +4,18 @@ export interface User {
     username: string
     email: string;
     password: string;
-    bio?: string;
-    profileImage?: string;
+    bio?: string | null;
+    profileImage?: string | null;
     type?: Role;
 }
 
-export interface Register extends User {
+export interface Register {
     username: string
     email: string;
     password: string;
 }
 
-export interface Login extends User {
+export interface Login {
     email: string;
     password: string;
 }
@@ -35,5 +35,5 @@ export interface LoginRequest {
 
 export interface LoginResponse {
     status: number;
-    body: User | { error: string }
+    body: Omit<User, 'password'> | { error: string }
 }
